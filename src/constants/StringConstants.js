@@ -15,6 +15,7 @@ const RENAME_FOLDER = 'Rename Folder';
 
 /* URL Path */
 const FAVEICON_PATH = 'https://s2.googleusercontent.com/s2/favicons?domain=';
+const API_BACKEND_BASE_URL = 'http://localhost:8081/';
 
 /* Web Related */
 const WEB_WWW = 'www';
@@ -79,4 +80,5 @@ export default {
   FOLDER_ADDED_MESSAGE,
   FOLDER_DEL_MESSAGE,
   FOLDER_LAST_MESSAGE,
+  API_BACKEND_BASE_URL,
 };

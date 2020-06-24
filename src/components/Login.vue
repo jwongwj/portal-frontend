@@ -118,9 +118,11 @@ export default {
       if (this.username.toLowerCase() === 'admin') {
         this.$store.dispatch('authenticate', { userrole: 'admin' });
         this.$router.push('AdminHome');
+        this.$eventHub.$emit('logStatus');
       } else if (this.username.toLowerCase() === 'user') {
         this.$store.dispatch('authenticate');
-        this.$router.push('UserHome');
+        this.$router.push('joblist');
+        this.$eventHub.$emit('logStatus');
       } else {
         this.$store.dispatch('cleartoken');
       }
@@ -143,6 +145,8 @@ export default {
               .then(() => { });
             if (data.additionalUserInfo.isNewUser) {
               this.$eventHub.$emit(EventConstants.SHOW_ALERT_EVENT, this.username, StringConstants.ADDED_MESSAGE, StringConstants.SUCCESS_ALERT);
+              this.$eventHub.$emit('logStatus');
+              this.$router.push('joblist');
             }
           })
           .catch((err) => {

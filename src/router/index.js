@@ -27,8 +27,8 @@ const routes = [
     },
   },
   {
-    path: '/UserHome',
-    name: 'UserHome',
+    path: '/joblist',
+    name: 'joblist',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
@@ -66,7 +66,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   if (to.path === '/' && Access.isLoggedIn()) {
     // When user is logged in, direect to home
-    next('/UserHome');
+    next('/joblist');
   } else if (to.path === '/' && !Access.isLoggedIn()) {
     // When user is logged off, direct to login
     next();

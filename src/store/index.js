@@ -11,14 +11,17 @@ const CHECK_AUTHENTICATION = 'CHECK_AUTHENTICATION';
 const USER_IS_ADMIN = 'USER_IS_ADMIN';
 
 export default new Vuex.Store({
-  state: {},
+  state: {
+    isAuthenticated: false,
+  },
   mutations: {
     [AUTHENTICATE]: (state, payload) => {
       state.isAuthenticated = true;
       sessionStorage.setItem(USER_IS_ADMIN, payload != null && payload.userrole === 'admin');
       sessionStorage.setItem(CHECK_AUTHENTICATION, 'true');
     },
-    [CLEAR_TOKEN]: () => {
+    [CLEAR_TOKEN]: (state) => {
+      state.isAuthenticated = false;
       sessionStorage.clear(CHECK_AUTHENTICATION);
       sessionStorage.clear(USER_IS_ADMIN);
     },
@@ -32,5 +35,15 @@ export default new Vuex.Store({
     },
   },
   modules: {},
-  getters: {},
+  getters: {
+    isAuthenticated(state) {
+      if (
+        sessionStorage.getItem(CHECK_AUTHENTICATION) != null &&
+        sessionStorage.getItem(CHECK_AUTHENTICATION) === 'true'
+      ) {
+        return true;
+      }
+      return state.isAuthenticated;
+    },
+  },
 });

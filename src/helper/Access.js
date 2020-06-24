@@ -5,12 +5,10 @@ const USER_ROLE_USER = 'USER';
 const NOT_AUTHORIZED = 'NOACCESS';
 export default {
   isLoggedIn() {
-    console.log(sessionStorage.getItem(CHECK_AUTHENTICATION));
-    return sessionStorage.getItem(CHECK_AUTHENTICATION) === 'true';
+    return sessionStorage.getItem(CHECK_AUTHENTICATION) === 'true'; // Temporary Way
   },
   checkAdmin() {
-    console.log(sessionStorage.getItem(USER_IS_ADMIN));
-    return sessionStorage.getItem(USER_IS_ADMIN) === 'true';
+    return sessionStorage.getItem(USER_IS_ADMIN) === 'true'; // Temporary Way
   },
   checkUserRole() {
     if (this.checkAdmin()) {
