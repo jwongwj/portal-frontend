@@ -16,7 +16,7 @@
             class="largefont col-8"
           >{{ jobdetail.title }}</v-col>
           <v-col class="col-2">
-            <v-row> Date Posted </v-row>
+            <v-row> Date Modified </v-row>
             <v-row>{{ jobdetail.dateposted }}</v-row>
           </v-col>
           <v-col
@@ -50,21 +50,6 @@
           class="justify-space-around"
         >
           <label class="largefont">{{task}}</label>
-          <v-btn color="success">
-            <v-icon>
-              mdi-plus
-            </v-icon>
-            Save
-          </v-btn>
-          <v-btn
-            color="red darken-4"
-            @click="cancel()"
-          >
-            <v-icon color="white">
-              mdi-delete-variant
-            </v-icon>
-            <label style="color: white"> Cancel </label>
-          </v-btn>
         </v-card-actions>
 
         <v-divider
@@ -74,31 +59,40 @@
         <v-row class="justify-space-around">
           <v-col>
             <v-text-field
+              v-model="jobdetail.title"
               label="Job Title"
               outline
-            > Title</v-text-field>
+              :value="jobdetail.title"
+            ></v-text-field>
           </v-col>
           <v-col>
             <v-text-field
-              label="Date Posted"
+              v-model="jobdetail.dateposted"
+              label="Date Last Modified"
               outline
-            > Title</v-text-field>
+              :value="jobdetail.dateposted"
+              disabled
+            > </v-text-field>
           </v-col>
         </v-row>
         <v-row class="justify-space-around">
           <v-col>
             <v-text-field
+              v-model="jobdetail.company"
               label="Company Name"
               outline
-            > Title</v-text-field>
+              :value="jobdetail.company"
+            > </v-text-field>
           </v-col>
         </v-row>
         <v-row class="justify-space-around">
           <v-col>
             <v-text-field
+              v-model="jobdetail.location"
               label="Location"
               outline
-            > Title</v-text-field>
+              :value="jobdetail.location"
+            ></v-text-field>
           </v-col>
 
         </v-row>
@@ -107,7 +101,11 @@
         </v-row>
         <v-row class="justify-space-around">
           <v-col>
-            <TextEditor />
+            <TextEditor
+              ref="editor"
+              eventname="jobdetailsquill"
+              :value="value"
+            />
           </v-col>
         </v-row>
       </v-card-text>
@@ -121,47 +119,121 @@
     </v-card-actions> -->
     </v-card>
     <v-col
-      v-if="isAdmin"
+      v-if="isAdmin && !edit"
       class="listAdminControl"
     >
-      <v-spacer />
-      <v-btn
-        color="success"
-        class="col-12 bottommargin10"
-      >
-        <v-icon>
-          mdi-plus
-        </v-icon>
+      <v-tooltip right>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="success"
+            class="col-12 bottommargin10"
+            v-bind="attrs"
+            v-on="on"
+            @click="add"
+          >
+            <v-icon>
+              mdi-plus
+            </v-icon>
 
-      </v-btn>
-      <v-btn
-        color="warning"
-        @click="editjob()"
-        class="col-12 bottommargin10"
-      >
-        <v-icon>
-          mdi-pencil
-        </v-icon>
+          </v-btn>
+        </template>
+        <span>Add New Job</span>
+      </v-tooltip>
 
-      </v-btn>
-      <v-btn
-        color="accent"
-        class="col-12 bottommargin10"
-      >
-        <v-icon>
-          mdi-account-check-outline
-        </v-icon>
+      <v-tooltip right>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="warning"
+            @click="editjob()"
+            class="col-12 bottommargin10"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>
+              mdi-pencil
+            </v-icon>
 
-      </v-btn>
-      <v-btn
-        color="red darken-4"
-        class="col-12 bottommargin10"
-      >
-        <v-icon color="white">
-          mdi-delete-variant
-        </v-icon>
-        <label style="color: white"> </label>
-      </v-btn>
+          </v-btn>
+        </template>
+        <span>Edit Job</span>
+      </v-tooltip>
+
+      <v-tooltip right>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="accent"
+            class="col-12 bottommargin10"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon>
+              mdi-account-check-outline
+            </v-icon>
+
+          </v-btn>
+        </template>
+        <span>Check Applicants</span>
+      </v-tooltip>
+
+      <v-tooltip right>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="red darken-4"
+            class="col-12 bottommargin10"
+            v-bind="attrs"
+            v-on="on"
+            @click="deletejob(jobdetail.id)"
+          >
+            <v-icon color="white">
+              mdi-delete-variant
+            </v-icon>
+            <label style="color: white"> </label>
+          </v-btn>
+        </template>
+        <span>Delete Job</span>
+      </v-tooltip>
+
+    </v-col>
+    <v-col
+      v-else-if="isAdmin && edit"
+      class="listAdminControl"
+    >
+      <v-tooltip right>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="success"
+            class="col-12 bottommargin10"
+            v-bind="attrs"
+            v-on="on"
+            @click="save(jobdetail)"
+          >
+            <v-icon>
+              mdi-content-save
+            </v-icon>
+
+          </v-btn>
+        </template>
+        <span>Save</span>
+      </v-tooltip>
+
+      <v-tooltip right>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="red darken-4"
+            class="col-12 bottommargin10"
+            @click="cancel"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon color="white">
+              mdi-cancel
+            </v-icon>
+            <label style="color: white"> </label>
+          </v-btn>
+        </template>
+        <span>Cancel</span>
+      </v-tooltip>
+
     </v-col>
   </v-flex>
 </template>
@@ -181,20 +253,59 @@ export default {
       jobdetail: {},
       edit: false,
       task: '',
+      value: '',
+      oldJobDetails: {},
     };
   },
   methods: {
     populateJobDetails (jobid) {
       axios.get(`${StringConstants.API_BACKEND_BASE_URL}getjobbyid?id=${jobid}`).then((response) => {
         this.jobdetail = response.data;
+        this.value = this.jobdetail.description;
       });
     },
     editjob () {
+      this.jobedit('Edit Job', this.jobdetail.description, false);
+    },
+    add () {
+      this.jobedit('Add Job', '', true);
+    },
+    jobedit (task, editorvalue, isNewJob) {
       this.edit = true;
-      this.task = 'Edit Job';
+      Object.assign(this.oldJobDetails, this.jobdetail);
+      if (isNewJob) this.jobdetail = {};
+      this.task = task;
+      this.value = editorvalue;
     },
     cancel () {
       this.edit = false;
+      Object.assign(this.jobdetail, this.oldJobDetails);
+      this.oldJobDetails = {};
+    },
+    save (job) {
+      job.dateposted = this.getDate();
+      job.description = this.$refs.editor.text;
+      axios.post(`${StringConstants.API_BACKEND_BASE_URL}savejob`, job).then(() => {
+        this.$eventHub.$emit('updatedjob', true);
+      });
+      this.edit = false;
+      this.oldJobDetails = {};
+    },
+    getDate () {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+      let today = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = months[today.getMonth()];
+      const yyyy = today.getFullYear();
+
+      today = `${dd} ${mm} ${yyyy}`;
+      return today;
+    },
+    deletejob (jobid) {
+      axios.post(`${StringConstants.API_BACKEND_BASE_URL}deletejob?id=${jobid}`).then(() => {
+        this.$eventHub.$emit('updatedjob', false);
+      });
     },
   },
   props: {
@@ -202,7 +313,6 @@ export default {
   },
   created () {
     this.$eventHub.$on('selectedJobDetails', this.populateJobDetails);
-    this.populateJobDetails(1);
   },
 };
 </script>

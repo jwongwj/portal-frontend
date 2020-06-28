@@ -8,12 +8,10 @@
 
       <v-row>
         <v-col class="col-12">
-          <v-text-field append-icon="mdi-magnify"> test
-
+          <v-text-field append-icon="mdi-magnify">
           </v-text-field>
         </v-col>
       </v-row>
-      </v-flex>
 
     </v-toolbar>
     <v-list
@@ -36,7 +34,7 @@
             <v-list-item-subtitle v-html="itemList.company"></v-list-item-subtitle>
             <v-list-item-subtitle v-html="itemList.dateposted"></v-list-item-subtitle>
           </v-list-item-content>
-          <v-list-item-icon>
+          <!-- <v-list-item-icon>
             <v-chip
               class="ma-2"
               :color="getStatusIcon(itemList.status).color"
@@ -47,7 +45,7 @@
               </v-avatar>
               {{getStatusIcon(itemList.status).text}}
             </v-chip>
-          </v-list-item-icon>
+          </v-list-item-icon> -->
         </v-list-item>
       </v-list-item-group>
     </v-list>
@@ -62,10 +60,8 @@ import StringConstants from '@/constants/StringConstants';
 export default {
   name: 'JobList',
   created () {
-    axios.get(`${StringConstants.API_BACKEND_BASE_URL}getjoblist`).then((response) => {
-      this.filteredList = response.data;
-      if (this.filteredList.length > 0) { this.$eventHub.$emit('selectedJobDetails', this.filteredList[0].jobid); }
-    });
+    this.getJobList(false);
+    this.$eventHub.$on('updatedjob', this.getJobList);
   },
   data () {
     return {
@@ -92,7 +88,15 @@ export default {
       };
     },
     selectJob (item) {
-      this.$eventHub.$emit('selectedJobDetails', item.jobid);
+      this.$eventHub.$emit('selectedJobDetails', item.id);
+    },
+    getJobList (update) {
+      axios.get(`${StringConstants.API_BACKEND_BASE_URL}getjoblist`).then((response) => {
+        this.filteredList = response.data;
+        if (this.filteredList.length > 0 && !update) {
+          this.$eventHub.$emit('selectedJobDetails', this.filteredList[0].id);
+        }
+      });
     },
   },
 };
@@ -164,8 +168,8 @@ export default {
   height: 40%;
   font-weight: 500;
   text-transform: uppercase;
-  background: linear-gradient(to right, #30cfd0 0%, #330867 100%);
-  -webkit-background-clip: text;
+  background: linear-gradient(to right, #3083d0 0%, #651fbb 100%);
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -176,7 +180,7 @@ export default {
   min-height: 89vh;
   display: block;
   float: left;
-  width: 5vw;
+  width: 6vw;
   height: 40px;
 }
 </style>

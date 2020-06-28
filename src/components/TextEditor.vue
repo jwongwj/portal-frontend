@@ -1,142 +1,72 @@
-<!-- Credits to: https://dev.to/casualcoder/tiptap-with-vuetify-1lmi -->
-<!-- Alsoo: https://tiptap.scrumpy.io/ -->
 <template>
-  <div class="editor">
-    <editor-menu-bar
-      :editor="editor"
-      v-slot="{ commands, isActive }"
-    >
-      <div class="menubar">
-        <v-btn
-          text
-          icon
-          :class="{ 'is-active': isActive.bold() }"
-          @click="commands.bold"
-        >
-          <v-icon>mdi-format-bold</v-icon>
-        </v-btn>
-
-        <v-btn
-          text
-          icon
-          :class="{ 'is-active': isActive.italic() }"
-          @click="commands.italic"
-        >
-          <v-icon>mdi-format-italic</v-icon>
-        </v-btn>
-
-        <v-btn
-          text
-          icon
-          :class="{ 'is-active': isActive.underline() }"
-          @click="commands.underline"
-        >
-          <v-icon>mdi-format-underline</v-icon>
-        </v-btn>
-
-        <v-btn
-          text
-          icon
-          :class="{ 'is-active': isActive.bullet_list() }"
-          @click="commands.bullet_list"
-        >
-          <v-icon>mdi-format-list-bulleted</v-icon>
-        </v-btn>
-
-        <v-btn
-          text
-          icon
-          :class="{ 'is-active': isActive.ordered_list() }"
-          @click="commands.ordered_list"
-        >
-          <v-icon>mdi-format-list-numbered</v-icon>
-        </v-btn>
-
-        <v-btn
-          text
-          icon
-          @click="commands.undo"
-        >
-          <v-icon>mdi-undo</v-icon>
-        </v-btn>
-
-        <v-btn
-          text
-          icon
-          @click="commands.redo"
-        >
-          <v-icon>mdi-redo</v-icon>
-        </v-btn>
-
-      </div>
-    </editor-menu-bar>
-
-    <editor-content
-      class=" thickBorder"
-      :editor="editor"
-    />
+  <div
+    class="editor"
+    ref="editor"
+  >
   </div>
 </template>
 
 <script>
-import { Editor, EditorContent, EditorMenuBar } from 'tiptap';
-import {
 
-  HardBreak,
-
-  OrderedList,
-  BulletList,
-  ListItem,
-  TodoItem,
-  TodoList,
-  Bold,
-
-  Italic,
-
-  Strike,
-  Underline,
-  History,
-} from 'tiptap-extensions';
+import Quill from 'quill';
 
 export default {
-  components: {
-    EditorContent,
-    EditorMenuBar,
+  props: {
+    value: {
+      type: String,
+      default: '',
+    },
+    eventname: String,
   },
+
   data () {
     return {
-      editor: new Editor({
-        extensions: [
-          new BulletList(),
-          new HardBreak(),
-          new ListItem(),
-          new OrderedList(),
-          new TodoItem(),
-          new TodoList(),
-          new Bold(),
-          new Italic(),
-          new Strike(),
-          new Underline(),
-          new History(),
-        ],
-        content: '',
-      }),
+      editor: null,
+      text: '',
     };
   },
-  beforeDestroy () {
-    this.editor.destroy();
+  mounted () {
+    this.editor = new Quill(this.$refs.editor, {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, 3, 4, 5, 6, false] }],
+          ['bold', 'italic', 'underline', 'strike'], // toggled buttons
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          [{ indent: '-1' }, { indent: '+1' }], // outdent/indent
+          [{ direction: 'rtl' }], // text direction
+          [{ color: [] }, { background: [] }], // dropdown with defaults from theme
+          [{ align: [] }],
+
+          ['clean'], // remove formatting button
+        ],
+      },
+      theme: 'snow',
+    });
+
+    this.editor.root.innerHTML = this.value;
+
+    this.editor.on('text-change', () => this.update());
+  },
+
+  methods: {
+    update () {
+      this.text = this.editor.getText() ? this.editor.root.innerHTML : '';
+    },
+    removeElementsByClass (className) {
+      const elements = document.getElementsByClassName(className);
+      while (elements.length > 0) {
+        elements[0].parentNode.removeChild(elements[0]);
+      }
+    },
+  },
+  destroyed () {
+    this.removeElementsByClass('ql-toolbar'); // Vue not deleting toolbar when quill is destroyed
   },
 };
 </script>
 
 <style>
-.ProseMirror {
-  border: black solid 1px;
-  border-radius: 5px;
+.editor {
   min-height: 30vh;
-  padding-left: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  padding-right: 10px;
 }
 </style>
