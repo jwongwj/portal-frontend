@@ -57,7 +57,7 @@
 
             </v-form>
           </v-flex>
-          <div
+          <!-- <div
             class="hr-sect"
             v-if="createUser"
           >
@@ -83,7 +83,7 @@
             v-if="!createUser"
           >
             Cancel
-          </v-btn>
+          </v-btn> -->
         </div>
       </v-img>
 
@@ -94,9 +94,10 @@
 
 <script>
 import globalmixin from '@/mixins/GlobalMixins';
-import firebase from 'firebase';
+// import firebase from 'firebase';
 import EventConstants from '@/constants/EventConstants';
 import StringConstants from '@/constants/StringConstants';
+import axios from 'axios';
 
 export default {
   name: 'Login',
@@ -115,44 +116,58 @@ export default {
   },
   methods: {
     authenticate () {
-      if (this.username.toLowerCase() === 'admin') {
-        this.$store.dispatch('authenticate', { userrole: 'admin' });
-        this.$router.push('AdminHome');
-        this.$eventHub.$emit('logStatus');
-      } else if (this.username.toLowerCase() === 'user') {
-        this.$store.dispatch('authenticate');
-        this.$router.push('joblist');
-        this.$eventHub.$emit('logStatus');
-      } else {
-        this.$store.dispatch('cleartoken');
-      }
+      const username = this.username.toLowerCase();
+      const pass = this.password.toLowerCase();
+      const userobj = {
+        user: username,
+        encrypt: pass,
+      };
+      axios.post(`${StringConstants.API_BACKEND_BASE_URL}authenticate`, userobj)
+        .then((response) => {
+          if (response.data === 'admin') {
+            this.$store.dispatch('authenticate', { userrole: 'admin' });
+            this.$router.push('joblist');
+            this.$eventHub.$emit('logStatus');
+          } else if (response.data === 'user') {
+            this.$store.dispatch('authenticate');
+            this.$router.push('joblist');
+            this.$eventHub.$emit('logStatus');
+          } else if (response.data === 'invaliduser') {
+            this.$store.dispatch('cleartoken');
+            this.$eventHub.$emit(EventConstants.SHOW_ALERT_EVENT, 'Invalid User', '', StringConstants.DELETED_ALERT);
+          } else {
+            this.$eventHub.$emit(EventConstants.SHOW_ALERT_EVENT, 'Unknown Error. Please check with administrator', '', StringConstants.DELETED_ALERT);
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
     },
     enter () {
       this.authenticate();
     },
     userCreate () {
-      if (this.createUser) {
-        this.createUser = false;
-      } else {
-        firebase
-          .auth()
-          .createUserWithEmailAndPassword(this.username, this.password)
-          .then((data) => {
-            data.user
-              .updateProfile({
-                displayName: this.displayName,
-              })
-              .then(() => { });
-            if (data.additionalUserInfo.isNewUser) {
-              this.$eventHub.$emit(EventConstants.SHOW_ALERT_EVENT, this.username, StringConstants.ADDED_MESSAGE, StringConstants.SUCCESS_ALERT);
-              this.$eventHub.$emit('logStatus');
-              this.$router.push('joblist');
-            }
-          })
-          .catch((err) => {
-            this.$eventHub.$emit(EventConstants.SHOW_ALERT_EVENT, err, '', StringConstants.DELETED_ALERT);
-          });
-      }
+      // if (this.createUser) {
+      //   this.createUser = false;
+      // } else {
+      //   firebase
+      //     .auth()
+      //     .createUserWithEmailAndPassword(this.username, this.password)
+      //     .then((data) => {
+      //       data.user
+      //         .updateProfile({
+      //           displayName: this.displayName,
+      //         })
+      //         .then(() => { });
+      //       if (data.additionalUserInfo.isNewUser) {
+      //         this.$eventHub.$emit(EventConstants.SHOW_ALERT_EVENT, this.username, StringConstants.ADDED_MESSAGE, StringConstants.SUCCESS_ALERT);
+      //         this.$eventHub.$emit('logStatus');
+      //         this.$router.push('joblist');
+      //       }
+      //     })
+      //     .catch((err) => {
+      //       this.$eventHub.$emit(EventConstants.SHOW_ALERT_EVENT, err, '', StringConstants.DELETED_ALERT);
+      //     });
+      // }
     },
     cancel () {
       this.createUser = true;
