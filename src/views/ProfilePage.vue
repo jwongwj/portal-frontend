@@ -1,5 +1,15 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+  <Profile />
 </template>
+
+<script>
+import Profile from '@/components/Profile.vue';
+
+export default {
+  name: 'ProfilePage',
+
+  components: {
+    Profile,
+  },
+};
+</script>

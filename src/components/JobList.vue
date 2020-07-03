@@ -8,7 +8,10 @@
 
       <v-row>
         <v-col class="col-12">
-          <v-text-field append-icon="mdi-magnify">
+          <v-text-field
+            v-model="search"
+            append-icon="mdi-magnify"
+          >
           </v-text-field>
         </v-col>
       </v-row>
@@ -37,13 +40,13 @@
           <!-- <v-list-item-icon>
             <v-chip
               class="ma-2"
-              :color="getStatusIcon(itemList.status).color"
+              :color="getStatusIcon(itemList.applied).color"
               text-color="white"
             >
               <v-avatar left>
-                <v-icon>{{getStatusIcon(itemList.status).icon}}</v-icon>
+                <v-icon>{{getStatusIcon(itemList.applied).icon}}</v-icon>
               </v-avatar>
-              {{getStatusIcon(itemList.status).text}}
+              {{getStatusIcon(itemList.applied).text}}
             </v-chip>
           </v-list-item-icon> -->
         </v-list-item>
@@ -56,7 +59,9 @@
 <script>
 import axios from 'axios';
 import StringConstants from '@/constants/StringConstants';
+// import Vue from 'vue';
 
+// Vue.forceUpdate();
 export default {
   name: 'JobList',
   created () {
@@ -65,15 +70,16 @@ export default {
   },
   data () {
     return {
-      filteredList: {},
+      itemList: [],
+      search: '',
     };
   },
   methods: {
     selectItem () { },
     getImage () { },
     navigateURL () { },
-    getStatusIcon (status) {
-      if (status === 'applied') {
+    getStatusIcon (applied) {
+      if (applied) {
         return {
           icon: 'mdi-checkbox-marked-circle',
           color: 'success',
@@ -91,11 +97,31 @@ export default {
       this.$eventHub.$emit('selectedJobDetails', item.id);
     },
     getJobList (update) {
-      axios.get(`${StringConstants.API_BACKEND_BASE_URL}getjoblist`).then((response) => {
-        this.filteredList = response.data;
-        if (this.filteredList.length > 0 && !update) {
-          this.$eventHub.$emit('selectedJobDetails', this.filteredList[0].id);
+      const userid = sessionStorage.getItem('USER_ID');
+      axios.post(`${StringConstants.API_BACKEND_BASE_URL}getjoblist`, userid).then((response) => {
+        this.itemList = response.data;
+        if (this.itemList.length > 0 && !update) {
+          this.$eventHub.$emit('selectedJobDetails', this.itemList[0].id);
+          this.$forceUpdate();
         }
+      });
+    },
+  },
+  computed: {
+    filteredList () {
+      const { search } = this;
+      return this.itemList.filter((i) => {
+        if (i == null) {
+          return;
+        }
+        return (
+          (i.company != null
+            && i.company.toLowerCase().includes(search.toLowerCase()))
+          || (i.name != null
+            && i.name.toLowerCase().includes(search.toLowerCase()))
+          || (i.location != null
+            && i.location.toLowerCase().includes(search.toLowerCase()))
+        );
       });
     },
   },
@@ -105,6 +131,7 @@ export default {
 <style>
 .listClass {
   max-width: 800px;
+  /* width: 35vw; */
   width: 25vw;
   height: 98%;
   overflow-y: hidden;

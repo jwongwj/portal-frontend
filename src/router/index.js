@@ -38,9 +38,9 @@ const routes = [
     },
   },
   {
-    path: '/JobListing',
-    name: 'JobListing',
-    component: () => import(/* webpackChunkName: "about" */ '../views/JobListing.vue'),
+    path: '/profile',
+    name: 'Profile',
+    component: () => import(/* webpackChunkName: "about" */ '../views/ProfilePage.vue'),
     meta: {
       roles: [Access.USER_ROLE_ADMIN, Access.USER_ROLE_USER],
     },

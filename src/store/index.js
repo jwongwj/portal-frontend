@@ -9,6 +9,7 @@ const CLEAR_TOKEN = 'CLEAR_TOKEN';
 const { sessionStorage } = window;
 const CHECK_AUTHENTICATION = 'CHECK_AUTHENTICATION';
 const USER_IS_ADMIN = 'USER_IS_ADMIN';
+const USER_ID = 'USER_ID';
 
 export default new Vuex.Store({
   state: {
@@ -19,11 +20,15 @@ export default new Vuex.Store({
       state.isAuthenticated = true;
       sessionStorage.setItem(USER_IS_ADMIN, payload != null && payload.userrole === 'admin');
       sessionStorage.setItem(CHECK_AUTHENTICATION, 'true');
+      if (payload != null) {
+        sessionStorage.setItem(USER_ID, payload.userid);
+      }
     },
     [CLEAR_TOKEN]: (state) => {
       state.isAuthenticated = false;
       sessionStorage.clear(CHECK_AUTHENTICATION);
       sessionStorage.clear(USER_IS_ADMIN);
+      sessionStorage.clear(USER_ID);
     },
   },
   actions: {

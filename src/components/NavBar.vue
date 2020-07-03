@@ -3,8 +3,11 @@
     app
     class="headercolor"
   >
-    <v-row>
-      <div class="d-flex align-center">
+    <v-row class="col-12">
+      <div
+        class="d-flex align-center"
+        @click="navigateToJobs"
+      >
         <v-img
           alt="Vuetify Logo"
           class="shrink mr-2"
@@ -19,10 +22,10 @@
         >JobPortal</label>
       </div>
     </v-row>
-    <v-row v-if="status">
-      <v-flex class="">Job Listing</v-flex>
-      <v-flex>Profile</v-flex>
-      <v-flex>Admin</v-flex>
+    <v-row
+      v-if="status"
+      class="float-right"
+    >
 
       <v-menu offset-y>
         <template
@@ -41,6 +44,33 @@
           </v-btn>
         </template>
         <v-list style="display: inline-block;">
+          <v-list-item
+            style="display: block;"
+            @click="navigateToJobs"
+          >
+            <v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>
+                  mdi-briefcase
+                </v-icon>
+              </v-list-item-icon>
+              Job List
+            </v-list-item-title>
+          </v-list-item>
+          <v-list-item
+            style="display: block;"
+            @click="navigateToProfile"
+          >
+            <v-list-item-title>
+              <v-list-item-icon>
+                <v-icon>
+                  mdi-account-search-outline
+                </v-icon>
+              </v-list-item-icon>
+              Profile
+            </v-list-item-title>
+          </v-list-item>
+
           <v-list-item
             style="display: block;"
             @click="logout"
@@ -83,6 +113,12 @@ export default {
     },
     checkLogin () {
       this.status = true;
+    },
+    navigateToProfile () {
+      this.$router.push('/profile');
+    },
+    navigateToJobs () {
+      this.$router.push('/joblist');
     },
   },
 };

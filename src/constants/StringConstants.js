@@ -41,6 +41,7 @@ const FOLDER_EDIT_MESSAGE = ' folder has been edited';
 const FOLDER_ADDED_MESSAGE = ' folder has been added';
 const FOLDER_DEL_MESSAGE = ' folder has been deleted';
 const FOLDER_LAST_MESSAGE = 'At least one folder needs to remain';
+const SAVE_MESSAGE = ' has been saved';
 
 /* Button Colors */
 const SUCCESS_ALERT = 'success';
@@ -81,4 +82,5 @@ export default {
   FOLDER_DEL_MESSAGE,
   FOLDER_LAST_MESSAGE,
   API_BACKEND_BASE_URL,
+  SAVE_MESSAGE,
 };

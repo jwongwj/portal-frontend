@@ -124,15 +124,16 @@ export default {
       };
       axios.post(`${StringConstants.API_BACKEND_BASE_URL}authenticate`, userobj)
         .then((response) => {
-          if (response.data === 'admin') {
-            this.$store.dispatch('authenticate', { userrole: 'admin' });
+          const responseObj = response.data;
+          if (responseObj.userrole === 'admin') {
+            this.$store.dispatch('authenticate', responseObj);
             this.$router.push('joblist');
             this.$eventHub.$emit('logStatus');
-          } else if (response.data === 'user') {
-            this.$store.dispatch('authenticate');
+          } else if (responseObj.userrole === 'user') {
+            this.$store.dispatch('authenticate', responseObj);
             this.$router.push('joblist');
             this.$eventHub.$emit('logStatus');
-          } else if (response.data === 'invaliduser') {
+          } else if (responseObj.userrole === 'invaliduser') {
             this.$store.dispatch('cleartoken');
             this.$eventHub.$emit(EventConstants.SHOW_ALERT_EVENT, 'Invalid User', '', StringConstants.DELETED_ALERT);
           } else {
@@ -183,7 +184,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .logindiv {
   text-align: -webkit-center;
   position: relative;
