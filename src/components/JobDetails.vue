@@ -34,7 +34,7 @@
               </tbody>
             </template>
           </v-simple-table>
-          <label v-else>No Applicants Yet</label>
+          <label v-else>{{dialogStatus}}</label>
         </v-card-text>
 
         <v-card-actions>
@@ -122,6 +122,21 @@
             </v-flex>
             <v-flex class="font-italic">
               {{jobdetail.location}}
+            </v-flex>
+          </v-col>
+          <v-col class="mediumfont col-4">
+
+            <v-flex>
+              <strong>Applicants</strong>
+            </v-flex>
+            <v-flex
+              v-if="jobdetail.applicants != null"
+              class=""
+            >
+              {{jobdetail.applicants.length}}
+            </v-flex>
+            <v-flex v-else>
+              None
             </v-flex>
           </v-col>
         </v-row>
@@ -355,6 +370,7 @@ export default {
       isloading: false,
       dialog: false,
       applicants: [],
+      dialogStatus: 'Loading...',
     };
   },
   methods: {
@@ -362,9 +378,11 @@ export default {
       this.applicants = [];
       this.dialog = true;
       // this.isloading = true;
+      this.dialogStatus = 'Loading...';
       axios.get(`${StringConstants.API_BACKEND_BASE_URL}getJobApplicants?id=${this.jobdetail.id}`).then((response) => {
         this.applicants = response.data;
         // this.isloading = false;
+        if (this.applicants.length === 0) { this.dialogStatus = 'No Applicants Yet'; }
       });
     },
     populateJobDetails (jobid) {

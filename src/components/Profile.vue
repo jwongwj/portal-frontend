@@ -14,6 +14,13 @@
           <v-flex class="loginoverlay">
             <v-form>
               <v-text-field
+                label="Employee ID"
+                v-model="userid"
+                shaped
+                prepend-inner-icon="mdi-card-account-details"
+                disabled
+              ></v-text-field>
+              <v-text-field
                 label="Email Address"
                 v-model="employee.email"
                 shaped
@@ -55,15 +62,16 @@ import StringConstants from '@/constants/StringConstants';
 import axios from 'axios';
 import EventConstants from '@/constants/EventConstants';
 
+const { sessionStorage } = window;
 export default {
   name: 'ProfilePage',
   data () {
     return {
       employee: {},
+      userid: sessionStorage.getItem('USER_ID'),
     };
   },
   created () {
-    const { sessionStorage } = window;
     axios.post(`${StringConstants.API_BACKEND_BASE_URL}getEmployeeDetails`, sessionStorage.getItem('USER_ID'), { headers: { 'Content-Type': 'application/json' } }).then((response) => {
       this.employee = response.data;
     });
